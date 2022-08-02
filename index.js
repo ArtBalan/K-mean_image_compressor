@@ -67,10 +67,10 @@ async function main(){
   }
 
 
-  while(!stop && step<10000000){
+  while(!stop && step<100000000){
     // console.log(step);
-    if(step%10000 == 0){
-      console.log(step);
+    if(step%100000 == 0){
+      console.log(step/100000 + '%');
     }
     // Cleaning links
     nodeList.forEach(node => node.cleanPointList());
