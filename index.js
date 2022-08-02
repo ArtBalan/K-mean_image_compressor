@@ -14,6 +14,7 @@ class Node{
     this.y = y;
     this.z = z;
     this.pointList = [];
+    this.deltaDist = 0;
   }
 
   cleanPointList(){
@@ -23,7 +24,7 @@ class Node{
 
 async function readImage(){
   let pixelArray = [];
-  const image = await Jimp.read('./AB3.bmp');
+  const image = await Jimp.read('./AB2.bmp');
   for(let i=0; i<image.bitmap.width; i++){
     for(let j=0; j<image.bitmap.height; j++){
       let color = Jimp.intToRGBA(image.getPixelColor(i,j));
@@ -40,9 +41,12 @@ function caldist(a, b) {
   return (b.x - a.x) ** 2 + (b.y - a.y) ** 2 + (b.z -a.z) ** 2;
 }
 
-let pointList = [];
+// determine the number of différent color in the export
+let nbrOfNode = 3;
+
+// sys var, do not toutch
 let nodeList = [];
-let nbrOfNode = 30;
+let pointList = [];
 let step = 0;
 let stop = false;
 
@@ -63,8 +67,11 @@ async function main(){
   }
 
 
-  while(!stop && step<20000){
-    console.log(step);
+  while(!stop && step<10000000){
+    // console.log(step);
+    if(step%10000 == 0){
+      console.log(step);
+    }
     // Cleaning links
     nodeList.forEach(node => node.cleanPointList());
   
@@ -83,6 +90,7 @@ async function main(){
     }
   
     let stop = true;
+    let nodeFinished = 0;
     nodeList.forEach(node =>{
       let tempX = 0;
       let tempY = 0;
@@ -100,23 +108,23 @@ async function main(){
         let dist = caldist(tempPoint,node); 
         if(dist>1){
           stop = false;
+        } else {
+          nodeFinished ++;
         }
         node.x = Math.floor(tempX);
         node.y = Math.floor(tempY);
         node.z = Math.floor(tempZ);
+        node.deltaDist = dist;
       }
     });
-
+    // console.log('node potentialy finished : ' + nodeFinished);
     step ++;
   }
 
-
-  nodeList.forEach(node => console.log(node.x + ' ' + node.y + ' ' + node.z))
-
+  nodeList.forEach(node => console.log(node.x + ' ' + node.y + ' ' + node.z));
+  nodeList.forEach(node => console.log('delta dist : ' + node.deltaDist));
 
   console.log('finished in ' + step + ' steps.');
-
-
 
 }
 
